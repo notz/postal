@@ -135,6 +135,11 @@ module Postal
         description "The number of threads to execute within each worker"
         default 2
       end
+
+      boolean :require_ip_address do
+        description "When enabled, workers will only process queued messages that have an IP address assigned. Messages without an IP address will be ignored."
+        default false
+      end
     end
 
     group :main_db do

@@ -9,6 +9,11 @@ postal:
   web_protocol: https
   smtp_hostname: postal.example.com
 
+worker:
+  # When enabled, workers will only process queued messages that have an IP address assigned.
+  # Messages without an IP address will be ignored. Default is false.
+  require_ip_address: false
+
 main_db:
   host: 127.0.0.1
   username: root
