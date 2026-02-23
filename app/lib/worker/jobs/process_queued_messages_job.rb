@@ -43,11 +43,19 @@ module Worker
       #
       # @return [void]
       def lock_message_for_processing
-        QueuedMessage.where(ip_address_id: [nil, @ip_addresses])
-                     .where(locked_by: nil, locked_at: nil)
-                     .ready_with_delayed_retry
-                     .limit(1)
-                     .update_all(locked_by: @locker, locked_at: @lock_time)
+        query = QueuedMessage.where(locked_by: nil, locked_at: nil)
+                             .ready_with_delayed_retry
+                             .limit(1)
+
+        if Postal::Config.worker.require_ip_address?
+          # Only process messages that have an IP address assigned
+          query = query.where(ip_address_id: @ip_addresses)
+        else
+          # Default behavior: process messages with or without IP address
+          query = query.where(ip_address_id: [nil, @ip_addresses])
+        end
+
+        query.update_all(locked_by: @locker, locked_at: @lock_time)
       end
 
       # Get a full list of all messages which we can process (i.e. those which have just
