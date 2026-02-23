@@ -1,11 +1,14 @@
 ---
 name: CI
-on: [push]
+on:
+  push:
+    branches:
+      - 'dev/**'
 
 jobs:
   release-please:
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/main' && false # disabled for now, as we don't want to create releases yet
     outputs:
       release_created: ${{ steps.release-please.outputs.release_created }}
       tag_name: ${{ steps.release-please.outputs.tag_name }} # e.g. v1.0.0
@@ -66,7 +69,8 @@ jobs:
     if: >-
       startsWith(github.ref, 'refs/heads/') &&
       startsWith(github.ref, 'refs/heads/release-please-') != true &&
-      startsWith(github.ref, 'refs/heads/dependabot/') != true
+      startsWith(github.ref, 'refs/heads/dependabot/') != true &&
+      startsWith(github.ref, 'refs/heads/dev/') != true
     steps:
       - uses: actions/checkout@v4
         with:
